@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>scikit-fmm</title>
+<meta name="author" content="(Jason Furtney)"/>
+<link rel="stylesheet" href="http://cdn.jsdelivr.net/reveal.js/2.5.0/css/reveal.css"/>
+<link rel="stylesheet" href="http://cdn.jsdelivr.net/reveal.js/2.5.0/css/theme/moon.css" id="theme"/>
+<link rel="stylesheet" href="ss.css"/>
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'http://cdn.jsdelivr.net/reveal.js/2.5.0/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide">
+<h1>scikit-fmm</h1>
+<h2>Jason Furtney</h2>
+<h2><a href="mailto:@jkfurtney">@jkfurtney</a></h2>
+<h2></h2>
+</section>
+
+<section>
+<section id="slide-orgheadline3">
+<h2 id="orgheadline3">Knowing your boundaries</h2>
+<p>
+&#x2026;and bootstrapping a SciPy-related community project
+</p>
+
+
+<div class="figure">
+<p><img src="./sol.png" alt="sol.png" />
+</p>
+</div>
+
+</section>
+<section>
+
+<p>
+Inspired by a lightning talk by Gael Varoquaux
+</p>
+
+
+<div class="figure">
+<p><img src="./gv.png" alt="gv.png" />
+</p>
+</div>
+
+<p>
+Bootstrapping a SciPy-related community project
+</p>
+
+<p>
+<a href="https://gist.github.com/GaelVaroquaux/1433151">https://gist.github.com/GaelVaroquaux/1433151</a>
+</p>
+
+</section>
+<section>
+
+
+<div class="figure">
+<p><img src="./bound.png" alt="bound.png" />
+</p>
+</div>
+
+<p>
+Stationary solutions to the Eikonal equation
+</p>
+
+<p>
+\(F(x) |\nabla T(x)| = 1\)
+</p>
+
+<p>
+<a href="https://en.wikipedia.org/wiki/Eikonal_equation">https://en.wikipedia.org/wiki/Eikonal_equation</a>
+</p>
+
+</section>
+<section>
+
+
+<div class="figure">
+<p><img src="./sol.png" alt="sol.png" />
+</p>
+</div>
+
+</section>
+<section>
+
+
+<div class="figure">
+<p><img src="./point.png" alt="point.png" />
+</p>
+</div>
+
+
+</section>
+<section id="slide-orgheadline1">
+<h3 id="orgheadline1">Implicit surface representation</h3>
+<p>
+Represent a surface as the zero contour of a function in one
+dimensions higher.
+</p>
+
+</section>
+<section>
+
+
+<div class="figure">
+<p><img src="./Level_set_method.jpg" alt="Level_set_method.jpg" />
+</p>
+</div>
+
+<p>
+(wikipedia)
+</p>
+
+</section>
+<section>
+
+
+<div class="figure">
+<p><img src="./grid_with_zeroc.png" alt="grid_with_zeroc.png" />
+</p>
+</div>
+
+<p>
+(from Sethian, 2006)
+</p>
+
+</section>
+<section id="slide-orgheadline2">
+<h3 id="orgheadline2">Fast Marching Method</h3>
+<ul>
+<li>The fast marching method (fmm) is an O(N Log(N)) algorithm for
+solving boundary value problems of the Eikonal equation.</li>
+
+<li>Created in the 1990s at MIT by James Sethian and Stanley Osher.</li>
+
+<li><code>scikit-fmm</code> is a Python/NumPy extension module which implements the fast
+marching method.</li>
+
+</ul>
+
+</section>
+<section>
+
+
+<div class="figure">
+<p><img src="./grid_with_zeroc.png" alt="grid_with_zeroc.png" />
+</p>
+</div>
+
+<p>
+(from Sethian, 2006)
+</p>
+
+</section>
+<section>
+
+
+<div class="figure">
+<p><img src="./narrow_band.png" alt="narrow_band.png" />
+</p>
+</div>
+
+<p>
+(from Sethian, 2006)
+</p>
+
+</section>
+<section>
+
+<ul>
+<li>Continous analogy of Dijkstra's algorithm.</li>
+<li><a href="https://en.wikipedia.org/wiki/Dijkstra's_algorithm">https://en.wikipedia.org/wiki/Dijkstra's_algorithm</a></li>
+
+</ul>
+
+</section>
+<section>
+
+<div class="org-src-container">
+
+<pre  class="src src-python">&gt;&gt;&gt; <span style="color: #4c83ff;">from</span> skfmm <span style="color: #4c83ff;">import</span> distance
+&gt;&gt;&gt; distance([1, -1])
+</pre>
+</div>
+
+<div class="org-src-container">
+
+<pre  class="src src-python">array([ 0.5, -0.5])
+</pre>
+</div>
+
+<ul>
+<li><code>numpy</code> arrays are used as input and output.</li>
+
+<li>The input array can be of 1, 2, 3 or higher dimensions and can be
+masked.</li>
+
+</ul>
+
+
+</section>
+<section>
+
+<div class="org-src-container">
+
+<pre  class="src src-python">&gt;&gt;&gt; <span style="color: #4c83ff;">from</span> skfmm <span style="color: #4c83ff;">import</span> distance
+&gt;&gt;&gt; distance([[ 1,  1,  1,  1,  1],
+              [ 1,  1, -1,  1,  1],
+              [ 1, -1, -1, -1,  1],
+              [ 1,  1, -1,  1,  1],
+              [ 1,  1,  1,  1,  1]])
+</pre>
+</div>
+
+<div class="org-src-container">
+
+<pre  class="src src-python">array([[ 1.79,  1.11,  0.50,  1.11,  1.79],
+       [ 1.11,  0.35, -0.35,  0.35,  1.11],
+       [ 0.50, -0.35, -1.11, -0.35,  0.50],
+       [ 1.11,  0.35, -0.35,  0.35,  1.11],
+       [ 1.79,  1.11,  0.50,  1.11,  1.79]])
+</pre>
+</div>
+
+</section>
+<section>
+
+<div class="figure">
+<p><img src="./doc0.png" alt="doc0.png" />
+</p>
+</div>
+
+</section>
+<section>
+
+<div class="figure">
+<p><img src="./doc1.png" alt="doc1.png" />
+</p>
+</div>
+
+</section>
+<section>
+
+<div class="figure">
+<p><img src="./doc2.png" alt="doc2.png" />
+</p>
+</div>
+
+</section>
+<section>
+
+<div class="figure">
+<p><img src="./doc3.png" alt="doc3.png" />
+</p>
+</div>
+
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline4">
+<h2 id="orgheadline4">Applications</h2>
+</section>
+<section>
+
+
+<div class="figure">
+<p><img src="./artery.png" alt="artery.png" />
+</p>
+</div>
+
+<p>
+<a href="https://math.berkeley.edu/~sethian/2006/Applications/Medical_Imaging/artery.html">https://math.berkeley.edu/~sethian/2006/Applications/Medical_Imaging/artery.html</a>
+</p>
+
+</section>
+<section>
+
+
+<div class="figure">
+<p><img src="./ms_paint.jpg" alt="ms_paint.jpg" />
+</p>
+</div>
+
+</section>
+<section>
+
+<ul>
+<li>Path finding</li>
+<li>Solving mazes</li>
+<li>Anthropology</li>
+
+</ul>
+
+</section>
+<section>
+
+
+<div class="figure">
+<p><img src="./AmericaSRTM-NorthLarge-picasa.jpg" alt="AmericaSRTM-NorthLarge-picasa.jpg" />
+</p>
+</div>
+
+</section>
+<section>
+
+
+<div class="figure">
+<p><img src="./rn.png" alt="rn.png" />
+</p>
+</div>
+
+<p>
+<a href="https://math.berkeley.edu/~sethian/2006/Applications/Robotics/robotics.html">https://math.berkeley.edu/~sethian/2006/Applications/Robotics/robotics.html</a>
+</p>
+
+</section>
+<section>
+
+<p>
+FMM is the foundation of the Level-Set method.
+</p>
+
+<p>
+Modeling moving boundaries in physical probelms.
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline7">
+<h2 id="orgheadline7">Community driven</h2>
+
+<div class="figure">
+<p><img src="./gv.png" alt="gv.png" />
+</p>
+</div>
+
+<p>
+Bootstrapping a SciPy-related community project
+</p>
+
+<p>
+<a href="https://gist.github.com/GaelVaroquaux/1433151">https://gist.github.com/GaelVaroquaux/1433151</a>
+</p>
+
+</section>
+<section>
+
+<ul>
+<li>Released in February 2012</li>
+
+<li>9 contributors</li>
+
+<li>7 versions</li>
+
+<li>92 commits</li>
+
+<li>1,744 lines of code (364 Python, 1,380 C++)</li>
+
+<li>731 lines of tests</li>
+
+<li>1 Stack Overflow question/answer</li>
+
+</ul>
+
+
+</section>
+<section id="slide-orgheadline5">
+<h3 id="orgheadline5">Things that worked well for me</h3>
+<ul>
+<li>Github organization, not a personal github page
+
+<ul>
+<li><a href="https://github.com/scikit-fmm/scikit-fmm">https://github.com/scikit-fmm/scikit-fmm</a></li>
+
+</ul></li>
+
+<li>Try to refrain from personal ownership of the project</li>
+
+</ul>
+
+</section>
+<section>
+
+<ul>
+<li>Start simple: I started with one function</li>
+
+<li>Minimal, well-documented, application-agnostic library</li>
+
+<li>Register on PyPI <a href="https://pypi.python.org/pypi/scikit-fmm">https://pypi.python.org/pypi/scikit-fmm</a></li>
+
+</ul>
+
+</section>
+<section>
+
+<ul>
+<li>Quickly address issues and release updates often.</li>
+
+<li>Mailing list, Github issues and pull requests.</li>
+
+<li>BSD style license. Similar to the PSF license.</li>
+
+</ul>
+
+</section>
+<section>
+
+<ul>
+<li>Thank people and add them to a CONTRIBUTORS.txt file</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<pre  class="src src-python">Jason Furtney
+Chris Richardson
+Luigi Costalli
+Daniel Wheeler
+Jan Margeta
+Geordie McBain
+Eugene Prilepin
+J A Kirkham
+</pre>
+</div>
+
+
+</section>
+<section id="slide-orgheadline6">
+<h3 id="orgheadline6">Things I should do better</h3>
+<ul>
+<li>Binary packaging</li>
+
+<li>More application specific examples</li>
+
+<li>Build bot, Travis CI</li>
+
+<li>Announce updates on the scipy-dev mailing list</li>
+
+<li>Technical:
+
+<ul>
+<li>Second order initilization (n-dimentional cubic interpolation
+and solving systems of polynomials.)</li>
+
+<li>Solutions in triangular grids and manifold surfaces.</li>
+
+</ul></li>
+
+</ul>
+</section>
+</section>
+</div>
+</div>
+<script src="http://cdn.jsdelivr.net/reveal.js/2.5.0/lib/js/head.min.js"></script>
+<script src="http://cdn.jsdelivr.net/reveal.js/2.5.0/js/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: false,
+center: true,
+slideNumber: true,
+rollingLinks: false,
+keyboard: true,
+overview: true,
+
+theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+transitionSpeed: 'default',
+multiplex: {
+    secret: '', // null if client
+    id: '', // id, obtained from socket.io server
+    url: '' // Location of socket.io server
+},
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: 'http://cdn.jsdelivr.net/reveal.js/2.5.0/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+ { src: 'http://cdn.jsdelivr.net/reveal.js/2.5.0/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'http://cdn.jsdelivr.net/reveal.js/2.5.0/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'http://cdn.jsdelivr.net/reveal.js/2.5.0/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: 'http://cdn.jsdelivr.net/reveal.js/2.5.0/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }]
+});
+</script>
+</body>
+</html>
