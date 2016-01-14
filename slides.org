@@ -162,11 +162,17 @@ https://math.berkeley.edu/~sethian/2006/Applications/Medical_Imaging/artery.html
 
 https://math.berkeley.edu/~sethian/2006/Applications/Robotics/robotics.html
 
-#+REVEAL: split
+** Level Set method
 
 FMM is the foundation of the Level-Set method.
 
 Modeling moving boundaries in physical problems.
+
+[[./water-droplet-585x298.jpg]]
+
+#+REVEAL: split
+
+[[./lsmon.png]]
 
 * Community driven
 
